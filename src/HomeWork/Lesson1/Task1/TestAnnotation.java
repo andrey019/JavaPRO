@@ -1,7 +1,10 @@
 package HomeWork.Lesson1.Task1;
 
-/**
- * Created by andrey on 26.05.16.
- */
-public class TestAnnotation {
+import java.lang.annotation.*;
+
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public  @interface TestAnnotation {
+    int a();
+    int b();
 }
