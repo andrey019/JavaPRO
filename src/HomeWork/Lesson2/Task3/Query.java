@@ -1,18 +1,9 @@
 package HomeWork.Lesson2.Task3;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name = "query")
 class Query {
-    @XmlElement
-    private String yahoo;
-    @XmlElement
-    private int count;
-    @XmlElement
-    private String created;
-    @XmlElement
-    private String lang;
     @XmlElement
     private Results results;
 

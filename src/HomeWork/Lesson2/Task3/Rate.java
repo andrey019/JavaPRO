@@ -1,9 +1,10 @@
 package HomeWork.Lesson2.Task3;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 class Rate {
-    @XmlElement
+    @XmlAttribute
     private String id;
     @XmlElement
     private String Name;
@@ -20,6 +21,14 @@ class Rate {
 
     @Override
     public String toString() {
-        return Name + "=" + Rate;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("\tid=" + id + "\n");
+        stringBuilder.append("\tName=" + Name + "\n");
+        stringBuilder.append("\tRate=" + Rate + "\n");
+        stringBuilder.append("\tDate=" + Date + "\n");
+        stringBuilder.append("\tTime=" + Time + "\n");
+        stringBuilder.append("\tAsk=" + Ask + "\n");
+        stringBuilder.append("\tBid=" + Bid + "\n");
+        return stringBuilder.toString();
     }
 }
