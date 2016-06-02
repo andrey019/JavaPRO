@@ -9,11 +9,10 @@ class Results {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("[");
-        for (int i = 0; i < rate.length - 1; i++) {
-            stringBuilder.append(rate[i] + ", ");
+        stringBuilder.append("\n");
+        for (int i = 0; i < rate.length; i++) {
+            stringBuilder.append(rate[i] + "\n");
         }
-        stringBuilder.append(rate[rate.length - 1] + "]");
         return stringBuilder.toString();
     }
 }
