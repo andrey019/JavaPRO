@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FileManager {
     private String path;
     private static ConcurrentHashMap<String, byte[]> map = new ConcurrentHashMap<String, byte[]>();
+    private static CacheLifeController cacheLifeController;
 
     public FileManager(String path) {
         // "c:\folder\" --> "c:\folder"
@@ -13,6 +14,8 @@ public class FileManager {
             path = path.substring(0, path.length() - 1);
 
         this.path = path;
+        this.cacheLifeController = new CacheLifeController(map);
+        this.cacheLifeController.start();
     }
 
     public byte[] get(String url) {
