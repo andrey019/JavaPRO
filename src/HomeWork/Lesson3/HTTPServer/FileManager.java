@@ -1,7 +1,11 @@
 package HomeWork.Lesson3.HTTPServer;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class FileManager {
     private String path;
@@ -41,5 +45,33 @@ public class FileManager {
             ex.printStackTrace();
             return null;
         }
+    }
+
+    public String save(HashMap<String, byte[]> files) {
+        if (files.isEmpty()) {
+            return null;
+        }
+        String archiveName = "archive.zip";
+        File file = new File(path + "\\" + archiveName);
+        for (int i = 1; file.exists(); i++) {
+            archiveName = "archive" + "[" + i + "]" + ".zip";
+            file = new File(path + "\\" + archiveName);
+        }
+
+        try {
+            ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(file));
+            for (Map.Entry<String, byte[]> entry : files.entrySet()) {
+                zipOutputStream.putNextEntry(new ZipEntry(entry.getKey()));
+                zipOutputStream.write(entry.getValue());
+                zipOutputStream.closeEntry();
+            }
+            zipOutputStream.flush();
+            zipOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return archiveName;
     }
 }
