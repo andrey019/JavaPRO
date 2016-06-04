@@ -114,7 +114,6 @@ public class Client implements Runnable {
 
     private void postProcessing(OutputStream os, byte[] fullPost) throws IOException {
         String responseFile = processFiles(fullPost);
-
         String redirectLocation = socket.getLocalAddress().toString() + ":"
                 + socket.getLocalPort() + "/" + responseFile;
 
@@ -123,6 +122,7 @@ public class Client implements Runnable {
         redirectResponse.append("Location: http:/" + redirectLocation + "\r\n\r\n");
         os.write(redirectResponse.toString().getBytes());
         System.out.println(redirectResponse);
+        System.out.println("---------------------------------------------");
     }
 
     private String processFiles(byte[] fullPost) {
@@ -177,8 +177,8 @@ public class Client implements Runnable {
 
             ByteArrayOutputStream bs = new ByteArrayOutputStream();
             byte[] buf, temp;
-            int len, b;
-            b = 0;
+            int len;
+            boolean notComplete = true;
             try {
                 do {
                     len = is.available();
@@ -189,49 +189,33 @@ public class Client implements Runnable {
 
                     temp = bs.toByteArray();
 
-                    //for (int i = 0; i < temp.length - 3 ; i++) {
                     if (temp.length > 100) {
                         if ((temp[temp.length - 4] == (byte)13) && (temp[temp.length - 3] == (byte)10) &&
                                 (temp[temp.length - 2] == (byte)13) && (temp[temp.length - 1] == (byte)10)) {
-//                        if ((temp[i] == (byte)13) && (temp[i + 1] == (byte)10) &&
-//                                (temp[i + 2] == (byte)13) && (temp[i + 3] == (byte)10)) {
 
                             String request = new String(temp, 0, temp.length - 4);
-//                            String request = new String(temp, 0, i);
                             process(request, os, null);
-                            b = 1;
+                            notComplete = false;
                         } else {
                             int indexStart;
                             int indexEnd;
                             String header;
                             if (temp.length > 500) {
                                 header = new String(Arrays.copyOf(temp, 500));
-                                //indexStart = header.indexOf("Content-Length:");
-                                //indexEnd = header.indexOf("\r\n", indexStart);
-
                             } else {
                                 header = new String(temp);
-                                //indexStart = header.indexOf("Content-Length:");
                             }
                             indexStart = header.indexOf("Content-Length: ") + "Content-Length: ".length();
                             indexEnd = header.indexOf("\r\n", indexStart);
                             int contentLength = Integer.valueOf(header.substring(indexStart, indexEnd));
-                            System.out.println(contentLength);
                             header = header.substring(0, header.indexOf("\r\n\r\n"));
-                            System.out.println(temp.length - header.getBytes().length);
                             if (temp.length - header.getBytes().length - 4 == contentLength) {
-                                b = 1;
-                                System.out.println(new String(temp));
                                 process(header, os, temp);
+                                notComplete = false;
                             }
-
-                            //String[] parts =
-                            //if ((temp.length > 200) && () )
                         }
                     }
-
-                    //}
-                } while ( b != 1 );    //Thread.currentThread().isInterrupted()
+                } while ( notComplete );
             } finally {
                 socket.close();
             }
