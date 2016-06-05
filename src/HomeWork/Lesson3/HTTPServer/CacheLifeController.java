@@ -14,6 +14,12 @@ class CacheLifeController extends Thread {
         timeMap = new HashMap<>();
     }
 
+    CacheLifeController(ConcurrentHashMap<String, byte[]> map, int maximumLifeTime) {
+        this.map = map;
+        this.maximumLifeTime = maximumLifeTime;
+        timeMap = new HashMap<>();
+    }
+
     public void run() {
         while (!isInterrupted()) {
             checkCache();
