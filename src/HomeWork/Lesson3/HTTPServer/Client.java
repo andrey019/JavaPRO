@@ -1,5 +1,7 @@
 package HomeWork.Lesson3.HTTPServer;
 
+import com.google.common.primitives.Bytes;
+
 import java.lang.Exception;
 import java.io.*;
 import java.net.*;
@@ -126,28 +128,48 @@ public class Client implements Runnable {
     }
 
     private String processFiles(byte[] fullPost) {
-        String stringPost = new String(fullPost);
-        int boundaryStart = stringPost.indexOf("boundary=") + "boundary=".length();
-        int boundaryEnd = stringPost.indexOf("\r\n", boundaryStart);
-        String boundary = stringPost.substring(boundaryStart, boundaryEnd);
-        HashMap<String, byte[]> files = new HashMap<>();
+        //String stringPost = new String(fullPost);
+        //System.out.println(stringPost);
+        //System.out.println("==================================================");
+//        int boundaryStart = stringPost.indexOf("boundary=") + "boundary=".length();
+//        int boundaryEnd = stringPost.indexOf("\r\n", boundaryStart);
+//        String boundary = stringPost.substring(boundaryStart, boundaryEnd);
+
+        int boundaryStart = Bytes.indexOf(fullPost, "boundary=".getBytes()) + "boundary=".length();
+        fullPost = Arrays.copyOfRange(fullPost, boundaryStart, fullPost.length);
+        int boundaryEnd = Bytes.indexOf(fullPost, "\r\n".getBytes());
+        byte[] boundaryBytes = Arrays.copyOfRange(fullPost, 0, boundaryEnd);
+        boundaryBytes = Bytes.concat("\r\n--".getBytes(), boundaryBytes);
+        byte[] rnBytes = "\r\n\r\n".getBytes();
+        byte[] fileNameBytes = "filename=\"".getBytes();
+        byte[] fileNameEndBytes = "\"\r\n".getBytes();
 
         int fileNameStart = 0;
         int fileNameEnd = 0;
         String fileName = null;
         int fileStart = 0;
         int fileEnd = 0;
-        int numberOfFiles = getNumberOfFiles(stringPost);
+        int startTemp = 0;
+        //int numberOfFiles = getNumberOfFiles(stringPost);
+        HashMap<String, byte[]> files = new HashMap<>();
 
-        for (int i = 0; i < numberOfFiles; i++) {
-            fileNameStart = stringPost.indexOf("filename=\"", fileNameStart) + "filename=\"".length();
-            fileNameEnd = stringPost.indexOf("\"", fileNameStart);
-            fileName = stringPost.substring(fileNameStart, fileNameEnd);
+        fileNameStart = Bytes.indexOf(fullPost, fileNameBytes) + fileNameBytes.length;
+        fullPost = Arrays.copyOfRange(fullPost, fileNameStart, fullPost.length);
+        fileNameEnd = Bytes.indexOf(fullPost,fileNameEndBytes);
+        while (fileNameEnd != -1) {
+            fileName = new String(Arrays.copyOfRange(fullPost, 0, fileNameEnd));
+            fullPost = Arrays.copyOfRange(fullPost, fileNameEnd, fullPost.length);
             if (fileName.length() > 1) {
-                fileStart = stringPost.indexOf("\r\n\r\n", fileNameEnd) + "\r\n\r\n".length();
-                fileEnd = stringPost.indexOf(boundary, fileStart) - 2;
-                files.put(fileName, Arrays.copyOfRange(fullPost, fileStart, fileEnd));
+                //startTemp = Bytes.indexOf(fullPost, boundaryBytes) + boundaryBytes.length;
+                //fullPost = Arrays.copyOfRange(fullPost, startTemp, fullPost.length);
+                fileStart = Bytes.indexOf(fullPost, rnBytes) + rnBytes.length;
+                fullPost = Arrays.copyOfRange(fullPost, fileStart, fullPost.length);
+                fileEnd = Bytes.indexOf(fullPost, boundaryBytes);
+                files.put(fileName, Arrays.copyOfRange(fullPost, 0, fileEnd));
             }
+            fileNameStart = Bytes.indexOf(fullPost, fileNameBytes) + fileNameBytes.length;
+            fullPost = Arrays.copyOfRange(fullPost, fileNameStart, fullPost.length);
+            fileNameEnd = Bytes.indexOf(fullPost,fileNameEndBytes);
         }
 
         String zipName = fm.save(files);
