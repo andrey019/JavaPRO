@@ -1,7 +1,6 @@
 package HomeWork.Lesson3.HTTPServer;
 
 import com.google.common.primitives.Bytes;
-
 import java.lang.Exception;
 import java.io.*;
 import java.net.*;
@@ -9,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.lang.Thread;
 
 public class Client implements Runnable {
     private Socket socket;
@@ -128,13 +126,6 @@ public class Client implements Runnable {
     }
 
     private String processFiles(byte[] fullPost) {
-        //String stringPost = new String(fullPost);
-        //System.out.println(stringPost);
-        //System.out.println("==================================================");
-//        int boundaryStart = stringPost.indexOf("boundary=") + "boundary=".length();
-//        int boundaryEnd = stringPost.indexOf("\r\n", boundaryStart);
-//        String boundary = stringPost.substring(boundaryStart, boundaryEnd);
-
         int boundaryStart = Bytes.indexOf(fullPost, "boundary=".getBytes()) + "boundary=".length();
         fullPost = Arrays.copyOfRange(fullPost, boundaryStart, fullPost.length);
         int boundaryEnd = Bytes.indexOf(fullPost, "\r\n".getBytes());
@@ -149,8 +140,6 @@ public class Client implements Runnable {
         String fileName = null;
         int fileStart = 0;
         int fileEnd = 0;
-        int startTemp = 0;
-        //int numberOfFiles = getNumberOfFiles(stringPost);//
         HashMap<String, byte[]> files = new HashMap<>();
 
         fileNameStart = Bytes.indexOf(fullPost, fileNameBytes) + fileNameBytes.length;
@@ -160,8 +149,6 @@ public class Client implements Runnable {
             fileName = new String(Arrays.copyOfRange(fullPost, 0, fileNameEnd));
             fullPost = Arrays.copyOfRange(fullPost, fileNameEnd, fullPost.length);
             if (fileName.length() > 1) {
-                //startTemp = Bytes.indexOf(fullPost, boundaryBytes) + boundaryBytes.length;
-                //fullPost = Arrays.copyOfRange(fullPost, startTemp, fullPost.length);
                 fileStart = Bytes.indexOf(fullPost, rnBytes) + rnBytes.length;
                 fullPost = Arrays.copyOfRange(fullPost, fileStart, fullPost.length);
                 fileEnd = Bytes.indexOf(fullPost, boundaryBytes);
@@ -178,18 +165,6 @@ public class Client implements Runnable {
         } else {
             return zipName;
         }
-    }
-
-    private int getNumberOfFiles(String stringPost) {
-        int filenameCount = 0;
-        int position = 0;
-        while (position != -1) {
-            position = stringPost.indexOf("filename=", position + 1);
-            if (position != -1) {
-                filenameCount++;
-            }
-        }
-        return filenameCount;
     }
 
     public void run() {

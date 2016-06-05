@@ -33,6 +33,7 @@ class CacheLifeController extends Thread {
                 if ( (System.currentTimeMillis() - timeMap.get(entry.getKey())) > maximumLifeTime ) {
                     timeMap.remove(entry.getKey());
                     map.remove(entry.getKey());
+                    System.out.println("Removed from cache: " + entry.getKey());
                 }
             }
         }
