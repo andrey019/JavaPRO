@@ -150,7 +150,7 @@ public class Client implements Runnable {
         int fileStart = 0;
         int fileEnd = 0;
         int startTemp = 0;
-        //int numberOfFiles = getNumberOfFiles(stringPost);
+        //int numberOfFiles = getNumberOfFiles(stringPost);//
         HashMap<String, byte[]> files = new HashMap<>();
 
         fileNameStart = Bytes.indexOf(fullPost, fileNameBytes) + fileNameBytes.length;
